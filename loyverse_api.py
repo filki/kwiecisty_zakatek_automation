@@ -8,7 +8,7 @@ import os
 import logging
 from datetime import datetime,timezone,timedelta
 import requests
-
+import pandas as pd 
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def get_todays_receipts_data():
     logger.info("Downloading todays receipts data")
     try:
         client = Client(access_token=access_token)
-        now = datetime.now(timezone.utc) - timedelta(days=1)
+        now = datetime.now(timezone.utc)
         response = client.receipts.get_by_date(now)
         logger.info("Successfully downloaded todays receipts data")
     except requests.exceptions.RequestException as e:
@@ -47,3 +47,35 @@ def get_todays_receipts_data():
         logger.info("Successfully converted receipts data to dataframe")
     
     return receipts_df
+
+def get_todays_customers_data():
+    """
+    Downloads todays customers data and converts it to a dataframe.
+    
+    Args:
+        access_token (str): Access token for the Loyverse API.
+
+    Returns:
+        pd.DataFrame: DataFrame containing todays customers data.
+
+    Raise:
+        requests.exceptions.RequestException: If the request to the Loyverse API fails.
+    """
+    logger = logging.getLogger(__name__)
+    logger.info("Downloading todays customers data")
+    try:
+        client = Client(access_token=access_token)
+        now = datetime.now(timezone.utc)
+        response = client.customers.get_by_query(limit = 250)
+        logger.info("Successfully downloaded todays customers data")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error downloading todays customers data: {e}")
+        return None
+    if len(response['customers']) == 0:
+        logger.info("No customers found for today")
+        return None
+    else:
+        customers_df = pd.DataFrame(response['customers'])
+        logger.info("Successfully converted customers data to dataframe")
+        return customers_df
+    
