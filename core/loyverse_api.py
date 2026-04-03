@@ -78,4 +78,32 @@ def get_todays_customers_data():
         customers_df = pd.DataFrame(response['customers'])
         logger.info("Successfully converted customers data to dataframe")
         return customers_df
+def get_categories_data():
+    """
+    Downloads categories data and converts it to a dataframe.
     
+    Args:
+        access_token (str): Access token for the Loyverse API.
+
+    Returns:
+        pd.DataFrame: DataFrame containing categories data.
+
+    Raise:
+        requests.exceptions.RequestException: If the request to the Loyverse API fails.
+    """
+    logger = logging.getLogger(__name__)
+    logger.info("Downloading categories data")
+    try:
+        client = Client(access_token=access_token)
+        response = client.categories.get_all()
+        logger.info("Successfully downloaded categories data")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error downloading categories data: {e}")
+        return None
+    if len(response['categories']) == 0:
+        logger.info("No categories found")
+        return None
+    else:
+        categories_df = pd.DataFrame(response['categories'])
+        logger.info("Successfully converted categories data to dataframe")
+        return categories_df

@@ -44,4 +44,5 @@ def get_weather():
     current = response.Current()
     current_temperature_2m = current.Variables(0).Value()
     logger.info("Successfully retrieved current temperature")
-    return current_temperature_2m
+    rounded_cur_temp = round(current_temperature_2m,2)
+    return rounded_cur_temp
