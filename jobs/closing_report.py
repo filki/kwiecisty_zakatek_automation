@@ -12,7 +12,7 @@ import textwrap
 load_dotenv()
 telegram_token = os.getenv("TELEGRAM_TOKEN")    
 chatid_token = os.getenv("TELEGRAM_CHAT_ID")
-DB_PATH = "/mnt/c/Users/ruder/Desktop/receipts.db"
+from config import DB_PATH
 now = datetime.now().strftime("%Y-%m-%d")
 logger = logging.getLogger(__name__)
 async def send_closing_report():

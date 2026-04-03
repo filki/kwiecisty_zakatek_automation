@@ -7,7 +7,7 @@ from database import get_table_keys, add_records_to_db
 Syncs the database with the latest receipts from Loyverse
 """
 load_dotenv()
-DB_PATH = "/mnt/c/Users/ruder/Desktop/receipts.db"
+from config import DB_PATH
 
 def sync_db_receipts():
     """

@@ -4,8 +4,9 @@ Database operations
 import sqlite3
 import logging
 import pandas as pd
-
+from pathlib import Path
 logger = logging.getLogger(__name__)
+
 
 
 def create_or_check_db(db_path, table_name, schema):
