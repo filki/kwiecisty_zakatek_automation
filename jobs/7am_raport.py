@@ -4,7 +4,7 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
+from core.calendar_events import get_name_days
 from asyncio.log import logger
 from core.weather import get_weather
 import os
@@ -35,10 +35,14 @@ async def send_morning_weather_report():
     """
     weather = get_weather()
     logger.info(f"Weather data: {weather}")
+    name_days = get_name_days()
+    logger.info(f"Name days: {name_days}")
     try:
         await send_telegram_message(telegram_token=telegram_token,chat_id_token=chatid_token,message_text=
                                         textwrap.dedent(f"""
                                         Cześć Monika, obecna pogoda: {weather} stopni celsjusza.
+                                        {name_days}
+                                        Miłego dnia!
                                         """)) 
         logger.info(f"Weather report sent to telegram")
     except Exception as e:
