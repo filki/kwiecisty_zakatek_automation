@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "loyverse",
+    "pandas>=3.0.2",
+    "python-dotenv>=1.2.2",
+    "pytz>=2026.1.post1",
 ]
 
 [tool.uv.sources]
