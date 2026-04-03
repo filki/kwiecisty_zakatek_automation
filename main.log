@@ -1,0 +1,43 @@
+2026-04-03 07:40:11,294 - loyverse_api - INFO - Downloading todays receipts data
+2026-04-03 07:40:11,834 - loyverse_api - INFO - Successfully downloaded todays receipts data
+2026-04-03 07:40:11,835 - loyverse_api - INFO - No receipts found for today
+2026-04-03 07:40:11,835 - weather - INFO - Getting weather data
+2026-04-03 07:40:11,852 - weather - INFO - Successfully created cache session
+2026-04-03 07:40:11,852 - weather - INFO - Successfully created openmeteo client
+2026-04-03 07:40:11,860 - weather - INFO - Successfully retrieved weather data
+2026-04-03 07:40:11,861 - weather - INFO - Successfully retrieved current temperature
+2026-04-03 07:40:11,861 - telegram_bot - INFO - Sending telegram message
+2026-04-03 07:40:11,909 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 07:40:12,062 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendMessage "HTTP/1.1 200 OK"
+2026-04-03 07:40:12,063 - telegram_bot - INFO - Successfully sent telegram message
+2026-04-03 07:40:12,063 - telegram_bot - INFO - Sending telegram document
+2026-04-03 07:40:12,075 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 07:40:12,271 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendDocument "HTTP/1.1 200 OK"
+2026-04-03 07:40:12,272 - telegram_bot - INFO - Successfully sent telegram document
+2026-04-03 08:50:50,783 - database - INFO - Getting rows number
+2026-04-03 08:50:50,788 - database - INFO - Successfully connected to database
+2026-04-03 08:50:50,792 - database - INFO - Successfully executed query
+2026-04-03 08:50:50,792 - __main__ - INFO - Number of receipts: 1
+2026-04-03 08:50:50,792 - telegram_bot - INFO - Sending telegram message
+2026-04-03 08:50:50,843 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 08:50:51,007 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendMessage "HTTP/1.1 200 OK"
+2026-04-03 08:50:51,008 - telegram_bot - INFO - Successfully sent telegram message
+2026-04-03 08:50:51,009 - __main__ - INFO - Closing report sent to telegram
+2026-04-03 08:50:51,010 - telegram_bot - INFO - Sending telegram document
+2026-04-03 08:50:51,018 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 08:50:51,217 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendDocument "HTTP/1.1 200 OK"
+2026-04-03 08:50:51,218 - telegram_bot - INFO - Successfully sent telegram document
+2026-04-03 08:51:06,248 - database - INFO - Getting rows number
+2026-04-03 08:51:06,251 - database - INFO - Successfully connected to database
+2026-04-03 08:51:06,253 - database - INFO - Successfully executed query
+2026-04-03 08:51:06,253 - __main__ - INFO - Number of receipts: 1
+2026-04-03 08:51:06,254 - telegram_bot - INFO - Sending telegram message
+2026-04-03 08:51:06,279 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 08:51:06,431 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendMessage "HTTP/1.1 200 OK"
+2026-04-03 08:51:06,432 - telegram_bot - INFO - Successfully sent telegram message
+2026-04-03 08:51:06,432 - __main__ - INFO - Closing report sent to telegram
+2026-04-03 08:51:06,434 - telegram_bot - INFO - Sending telegram document
+2026-04-03 08:51:06,442 - telegram_bot - INFO - Successfully created telegram bot
+2026-04-03 08:51:06,641 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8207002088:AAERNDi1HwkoeNAVep7aSMHc2911QpZ6JQs/sendDocument "HTTP/1.1 200 OK"
+2026-04-03 08:51:06,643 - telegram_bot - INFO - Successfully sent telegram document
+2026-04-03 08:51:06,643 - __main__ - INFO - Database copy sent to telegram
