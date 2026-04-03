@@ -16,6 +16,22 @@ DB_PATH = "/mnt/c/Users/ruder/Desktop/receipts.db"
 now = datetime.now().strftime("%Y-%m-%d")
 logger = logging.getLogger(__name__)
 async def send_closing_report():
+    """
+    Sends closing report to telegram.
+
+    Args:
+        telegram_token (str): Telegram token.
+        chatid_token (str): Chat ID token.
+        db_path (str): Path to the database.
+        now (str): Current date.
+        logger (logging.Logger): Logger.
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.Error: If the database operation fails.
+    """
     logging.basicConfig(level=logging.INFO,filename="main.log",format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     wynik = get_rows_number(db_path=DB_PATH,table_name='receipt_headers',unique_id='receipt_number')
@@ -30,8 +46,26 @@ async def send_closing_report():
     logger.info(f"Closing report sent to telegram")
 
 async def send_database_copy():
-    await send_telegram_document(telegram_token, chatid_token, DB_PATH)
-    logger.info(f"Database copy sent to telegram")
+    """
+    Sends database copy to telegram.
+
+    Args:
+        telegram_token (str): Telegram token.
+        chatid_token (str): Chat ID token.
+        db_path (str): Path to the database.
+        logger (logging.Logger): Logger.
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.Error: If the database operation fails.
+    """
+    try:
+        await send_telegram_document(telegram_token, chatid_token, DB_PATH)
+        logger.info(f"Database copy sent to telegram")
+    except Exception as e:
+        logger.error(f"Error sending database copy: {e}")
 
 asyncio.run(send_closing_report())
 asyncio.run(send_database_copy())
