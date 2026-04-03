@@ -15,3 +15,7 @@ wheels/
 *.env
 #db
 receipts.db
+#notebooks
+notebooks
+#cache
+.cache.sqlite
