@@ -1,10 +1,14 @@
 """
 Sends closing report to telegram.
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 import asyncio
-from database import get_rows_number,get_biggest_receipt_customer
+from core.database import get_rows_number,get_biggest_receipt_customer
 import logging
-from telegram_bot import send_telegram_message,send_telegram_document
+from core.telegram_bot import send_telegram_message,send_telegram_document
 from dotenv import load_dotenv
 from datetime import datetime
 import os

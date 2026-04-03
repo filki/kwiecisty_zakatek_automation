@@ -1,13 +1,17 @@
 """
 7am raport
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from asyncio.log import logger
-from weather import get_weather
+from core.weather import get_weather
 import os
 from dotenv import load_dotenv
 from datetime import datetime
 import asyncio
-from telegram_bot import send_telegram_message
+from core.telegram_bot import send_telegram_message
 import textwrap
 load_dotenv()
 telegram_token = os.getenv("TELEGRAM_TOKEN")

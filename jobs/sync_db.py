@@ -1,8 +1,12 @@
-from loyverse_api import get_todays_receipts_data,get_todays_customers_data
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from core.loyverse_api import get_todays_receipts_data,get_todays_customers_data
 import os
 from dotenv import load_dotenv
 import logging
-from database import get_table_keys, add_records_to_db
+from core.database import get_table_keys, add_records_to_db
 """
 Syncs the database with the latest receipts from Loyverse
 """
