@@ -13,3 +13,5 @@ wheels/
 *.log
 # Env
 *.env
+#db
+receipts.db
