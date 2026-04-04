@@ -3,12 +3,12 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.kwiaciarnia_monika.logger import setup_logger
-from src.kwiaciarnia_monika.loyverse_api import (
+from src.kwiaciarnia_monika.api.loyverse import (
     get_todays_receipts_data,
     get_todays_customers_data,
 )
 from dotenv import load_dotenv
-from src.kwiaciarnia_monika.database import get_table_keys, add_records_to_db
+from src.kwiaciarnia_monika.db.engine import get_table_keys, add_records_to_db
 from config import DB_PATH
 import logging
 import asyncio

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.kwiaciarnia_monika.database import (
+from src.kwiaciarnia_monika.db.engine import (
     get_customer_receipts_history,
     get_all_customers,
     get_customer_total_spent,

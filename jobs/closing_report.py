@@ -5,12 +5,12 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.kwiaciarnia_monika.logger import setup_logger
 import asyncio
-from src.kwiaciarnia_monika.database import (
+from src.kwiaciarnia_monika.db.engine import (
     get_rows_number,
     get_biggest_receipt_customer,
 )
 import logging
-from src.kwiaciarnia_monika.telegram_bot import (
+from src.kwiaciarnia_monika.bots.telegram_bot import (
     send_telegram_message,
     send_telegram_document,
 )
