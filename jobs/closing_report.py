@@ -15,7 +15,7 @@ from src.kwiaciarnia_monika.bots.telegram_bot import (
     send_telegram_document,
 )
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, date
 import os
 import textwrap
 from config import DB_PATH
@@ -48,7 +48,10 @@ async def send_closing_report():
     """
 
     wynik = get_rows_number(
-        db_path=DB_PATH, table_name="receipt_headers", unique_id="receipt_number"
+        db_path=DB_PATH,
+        table_name="receipt_headers",
+        unique_id="receipt_number",
+        query_date=date.today(),
     )
     logger.info(f"Number of receipts: {wynik}")
     closing_report = f"""

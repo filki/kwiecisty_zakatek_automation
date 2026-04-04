@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "beautifulsoup4>=4.14.3",
+    "libsql>=0.1.11",
+    "libsql-client>=0.3.1",
     "loyverse",
     "openmeteo-requests>=1.7.5",
     "pandas>=3.0.2",
