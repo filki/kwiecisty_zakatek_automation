@@ -1,7 +1,3 @@
-"""
-Loyverse API operations
-"""
-
 from loyverse import Client
 from dotenv import load_dotenv
 import os
@@ -32,7 +28,6 @@ def get_todays_receipts_data() -> (
     Raise:
         requests.exceptions.RequestException: If the request to the Loyverse API fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Downloading todays receipts data")
     try:
         client = Client(access_token=access_token)
@@ -66,11 +61,9 @@ def get_todays_customers_data():
     Raise:
         requests.exceptions.RequestException: If the request to the Loyverse API fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Downloading todays customers data")
     try:
         client = Client(access_token=access_token)
-        now = datetime.now(timezone.utc)
         response = client.customers.get_by_query(limit=250)
         logger.info("Successfully downloaded todays customers data")
     except requests.exceptions.RequestException as e:
@@ -98,7 +91,6 @@ def get_categories_data():
     Raise:
         requests.exceptions.RequestException: If the request to the Loyverse API fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Downloading categories data")
     try:
         client = Client(access_token=access_token)

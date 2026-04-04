@@ -1,7 +1,3 @@
-"""
-Sends closing report to telegram.
-"""
-
 import sys
 from pathlib import Path
 
@@ -26,7 +22,11 @@ from config import DB_PATH
 load_dotenv()
 telegram_token = os.getenv("TELEGRAM_TOKEN")
 chatid_token = os.getenv("TELEGRAM_CHAT_ID")
-
+logging.basicConfig(
+    level=logging.INFO,
+    filename="main.log",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 now = datetime.now().strftime("%Y-%m-%d")
 logger = logging.getLogger(__name__)
@@ -49,11 +49,6 @@ async def send_closing_report():
     Raises:
         sqlite3.Error: If the database operation fails.
     """
-    logging.basicConfig(
-        level=logging.INFO,
-        filename="main.log",
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
 
     wynik = get_rows_number(
         db_path=DB_PATH, table_name="receipt_headers", unique_id="receipt_number"
@@ -69,7 +64,7 @@ async def send_closing_report():
         chat_id_token=chatid_token,
         message_text=textwrap.dedent(closing_report),
     )
-    logger.info(f"Closing report sent to telegram")
+    logger.info("Closing report sent to telegram")
 
 
 async def send_database_copy():
@@ -90,7 +85,7 @@ async def send_database_copy():
     """
     try:
         await send_telegram_document(telegram_token, chatid_token, DB_PATH)
-        logger.info(f"Database copy sent to telegram")
+        logger.info("Database copy sent to telegram")
     except Exception as e:
         logger.error(f"Error sending database copy: {e}")
 
@@ -129,9 +124,10 @@ async def send_customers_report():
         chat_id_token=chatid_token,
         message_text=textwrap.dedent(customers_report),
     )
-    logger.info(f"Customers report sent to telegram")
+    logger.info("Customers report sent to telegram")
 
 
-asyncio.run(send_closing_report())
-asyncio.run(send_database_copy())
-asyncio.run(send_customers_report())
+if __name__ == "__main__":
+    asyncio.run(send_closing_report())
+    asyncio.run(send_database_copy())
+    asyncio.run(send_customers_report())
