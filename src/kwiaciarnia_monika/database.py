@@ -1,9 +1,4 @@
-"""
-Database operations
-"""
-
 from pathlib import Path
-
 import sqlite3
 import logging
 import pandas as pd
@@ -16,17 +11,6 @@ logger = logging.getLogger(__name__)
 def create_or_check_db(db_path: Path, table_name: str, schema: str):
     """
     Creates or checks a database table.
-
-    Args:
-        db_path (str): Path to the database file.
-        table_name (str): Name of the table to create or check.
-        schema (str): Schema of the table to create.
-
-    Returns:
-        None
-
-    Raise:
-        sqlite3.Error: If the database operation fails.
     """
     logger.info("Creating or checking database")
     with sqlite3.connect(db_path) as con:
@@ -41,19 +25,12 @@ def create_or_check_db(db_path: Path, table_name: str, schema: str):
 def add_records_to_db(data: pd.DataFrame, db_path: Path, table_name: str):
     """
     Adds records to the database.
-
-    Args:
-        data (pd.DataFrame): DataFrame containing data to add.
-        db_path (str): Path to the database file.
-        table_name (str): Name of the table to add data to.
-
-    Returns:
-        None
-
-    Raise:
-        sqlite3.Error: If the database operation fails.
     """
-    logger.info("Adding records to database")
+    if data.empty:
+        logger.info("No records to add")
+        return
+
+    logger.info(f"Adding {len(data)} records to database table: {table_name}")
     with sqlite3.connect(db_path) as con:
         data.to_sql(table_name, con, if_exists="append", index=False)
         logger.info("Successfully added records to database")
@@ -62,49 +39,28 @@ def add_records_to_db(data: pd.DataFrame, db_path: Path, table_name: str):
 def get_rows_number(db_path: Path, table_name: str, unique_id: str) -> int:
     """
     Gets the number of rows in a table.
-
-    Args:
-        db_path (str): Path to the database file.
-        table_name (str): Name of the table to get the number of rows from.
-        unique_id (str): Unique identifier of the table.
-
-    Returns:
-        int: Number of rows in the table.
-
-    Raise:
-        sqlite3.Error: If the database operation fails.
     """
     logger.info("Getting rows number")
     with sqlite3.connect(db_path) as con:
-        cur = con.cursor()
         logger.info("Successfully connected to database")
-        cur.execute(f"""SELECT COUNT({unique_id}) FROM {table_name}""")
+        result_df = pd.read_sql_query(
+            f"""SELECT COUNT({unique_id}) FROM {table_name}""", con
+        )
         logger.info("Successfully executed query")
-        result = cur.fetchone()
-    return result[0]
+        result = result_df.iloc[0, 0]
+        return int(result)
 
 
 def get_table_keys(db_path: Path, table_name: str, unique_id: str) -> List[str]:
     """
     Gets the unique keys from a table.
-
-    Args:
-        db_path (str): Path to the database file.
-        table_name (str): Name of the table to get the unique keys from.
-        unique_id (str): Unique identifier of the table.
-
-    Returns:
-        list: List of unique keys from the table.
-
-    Raise:
-        sqlite3.Error: If the database operation fails.
     """
     with sqlite3.connect(db_path) as con:
-        cur = con.cursor()
         try:
-            cur.execute(f"""SELECT DISTINCT {unique_id} FROM {table_name} """)
-            result = cur.fetchall()
-            result_list = [item[0] for item in result]
+            result_df = pd.read_sql_query(
+                f"""SELECT DISTINCT {unique_id} FROM {table_name} """, con
+            )
+            result_list = result_df[unique_id].tolist()
         except sqlite3.OperationalError:
             result_list = []
     return result_list
@@ -115,17 +71,6 @@ def get_biggest_receipt_customer(
 ) -> dict:
     """
     Gets the biggest receipt customer from the database.
-
-    Args:
-        db_path (str): Path to the database file.
-        table_name (str): Name of the table to get the biggest receipt customer from.
-        unique_id (str): Unique identifier of the table.
-
-    Returns:
-        pd.DataFrame: DataFrame containing the biggest receipt customer.
-
-    Raise:
-        sqlite3.Error: If the database operation fails.
     """
     logger.info("Getting biggest receipt customer")
     with sqlite3.connect(db_path) as con:
@@ -144,3 +89,50 @@ def get_biggest_receipt_customer(
             "name": top_customer["name"].iloc[0],
             "total_money": top_customer["total_money"].iloc[0],
         }
+
+
+def get_customer_receipts_history(db_path: Path, customer_id: str) -> pd.DataFrame:
+    """
+    Gets the customer receipts history from the database.
+    """
+    logger.info("Getting customer receipts history")
+    with sqlite3.connect(db_path) as con:
+        result_df = pd.read_sql_query(
+            """SELECT * FROM receipt_headers WHERE customer_id = ?""",
+            con,
+            params=[customer_id],
+        )
+        logger.info("Successfully executed query")
+        logger.info(f"Customer receipts history: {result_df}")
+        return result_df
+
+
+def get_all_customers(db_path: Path) -> pd.DataFrame:
+    """
+    Gets all customers from the database.
+    """
+    logger.info("Getting all customers")
+    with sqlite3.connect(db_path) as con:
+        result_df = pd.read_sql_query(
+            """SELECT DISTINCT r.customer_id, c.name FROM receipt_headers r JOIN customers c ON r.customer_id = c.id""",
+            con,
+        )
+        logger.info("Successfully executed query")
+        logger.info(f"All customers: {result_df}")
+        return result_df
+
+
+def get_customer_total_spent(db_path: Path, customer_id: str) -> float:
+    """
+    Gets the total amount spent by a customer.
+    """
+    logger.info("Getting customer total spent")
+    with sqlite3.connect(db_path) as con:
+        result_df = pd.read_sql_query(
+            """SELECT COALESCE(SUM(total_money), 0) FROM receipt_headers WHERE customer_id = ?""",
+            con,
+            params=[customer_id],
+        )
+        logger.info("Successfully executed query")
+        logger.info(f"Customer total spent: {result_df}")
+        return float(result_df.iloc[0, 0])

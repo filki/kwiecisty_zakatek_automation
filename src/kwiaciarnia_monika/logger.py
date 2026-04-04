@@ -7,3 +7,4 @@ def setup_logger():
         filename="main.log",
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
+    return logging.getLogger(__name__)
