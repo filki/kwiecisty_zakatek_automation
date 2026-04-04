@@ -18,7 +18,8 @@ jobs:
     - name: Install dependencies
       run: |
         uv sync
-        uv run
-        ty check
+    - name: Run type checking
+      run: |
+        uv run ty check
 
     
