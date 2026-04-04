@@ -48,7 +48,7 @@ def get_todays_receipts_data() -> (
     return receipts_df
 
 
-def get_todays_customers_data():
+def get_todays_customers_data() -> pd.DataFrame | None:
     """
     Downloads todays customers data and converts it to a dataframe.
 
@@ -78,7 +78,7 @@ def get_todays_customers_data():
         return customers_df
 
 
-def get_categories_data():
+def get_categories_data() -> pd.DataFrame | None:
     """
     Downloads categories data and converts it to a dataframe.
 

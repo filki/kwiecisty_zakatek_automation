@@ -1,57 +1,60 @@
-"""
-7am raport
-"""
-
-import sys
-from pathlib import Path
-from asyncio.log import logger
-
-# from src.kwiaciarnia_monika.weather import get_weather
-# from src.kwiaciarnia_monika.calendar_events import get_name_days
+import asyncio
+import logging
 import os
+import sys
+import textwrap
+from pathlib import Path
+
 from dotenv import load_dotenv
 
+# Ensure the package can be imported from src/
 sys.path.append(str(Path(__file__).resolve().parent.parent))
+from src.kwiaciarnia_monika.logger import setup_logger
+from src.kwiaciarnia_monika.calendar_events import get_namedays_message
+from src.kwiaciarnia_monika.telegram_bot import send_telegram_message
 
-load_dotenv()
-telegram_token = os.getenv("TELEGRAM_TOKEN")
-chatid_token = os.getenv("TELEGRAM_CHAT_ID")
-logger.info("Getting weather data")
-
-
-# async def send_morning_weather_report():
-#     """
-#     Sends morning weather report to telegram.
-
-#     Args:
-#         telegram_token (str): Telegram token.
-#         chatid_token (str): Chat ID token.
-#         logger (logging.Logger): Logger.
-
-#     Returns:
-#         None
-
-#     Raises:
-#         httpx.HTTPStatusError: If the HTTP request fails.
-#     """
-#     # weather = get_weather()
-#     # logger.info(f"Weather data: {weather}")
-#     name_days = get_name_days()
-#     logger.info(f"Name days: {name_days}")
-#     try:
-#         await send_telegram_message(
-#             telegram_token=telegram_token,
-#             chat_id_token=chatid_token,
-#             message_text=textwrap.dedent(f"""
-#                                         Hej Monika,
-#                                         {name_days}
-#                                         Miłego dnia!
-#                                         """),
-#         )
-#         logger.info(f"Weather report sent to telegram")
-#     except Exception as e:
-#         logger.error(f"Error sending weather report: {e}")
+logger = logging.getLogger(__name__)
 
 
-# if __name__ == "__main__":
-#     asyncio.run(send_morning_weather_report())
+async def send_namedays_report(telegram_token: str, chat_id_token: str):
+    """
+    Sends today's name days report to Telegram.
+    """
+    try:
+        name_days = get_namedays_message()
+        logger.info(f"Name days fetched: {name_days}")
+
+        message = textwrap.dedent(f"""
+            Hej Monika, 
+            dzisiaj imieniny obchodzą: {name_days}
+            Miłego dnia! 🌸
+        """).strip()
+
+        await send_telegram_message(
+            telegram_token=telegram_token,
+            chat_id_token=chat_id_token,
+            message_text=message,
+        )
+        logger.info("Name days report sent successfully")
+    except Exception as e:
+        logger.error(f"Error sending name days report: {e}")
+
+
+async def main():
+    """
+    Main entry point for the morning report job.
+    """
+    load_dotenv()
+    telegram_token = os.environ["TELEGRAM_TOKEN"]
+    chatid_token = os.environ["TELEGRAM_CHAT_ID"]
+
+    if not telegram_token or not chatid_token:
+        logger.error("Missing Telegram tokens in environment variables")
+        return
+
+    await send_namedays_report(telegram_token, chatid_token)
+
+
+if __name__ == "__main__":
+    setup_logger()
+    asyncio.run(main())

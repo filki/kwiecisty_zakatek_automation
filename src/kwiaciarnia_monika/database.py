@@ -2,15 +2,18 @@
 Database operations
 """
 
+from pathlib import Path
+
 import sqlite3
 import logging
 import pandas as pd
-from pathlib import Path
+from typing import List, Optional
+from datetime import date
 
 logger = logging.getLogger(__name__)
 
 
-def create_or_check_db(db_path: str, table_name: str, schema: str):
+def create_or_check_db(db_path: Path, table_name: str, schema: str):
     """
     Creates or checks a database table.
 
@@ -25,7 +28,6 @@ def create_or_check_db(db_path: str, table_name: str, schema: str):
     Raise:
         sqlite3.Error: If the database operation fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Creating or checking database")
     with sqlite3.connect(db_path) as con:
         cur = con.cursor()
@@ -36,7 +38,7 @@ def create_or_check_db(db_path: str, table_name: str, schema: str):
         logger.info("Successfully committed changes")
 
 
-def add_records_to_db(data, db_path, table_name):
+def add_records_to_db(data: pd.DataFrame, db_path: Path, table_name: str):
     """
     Adds records to the database.
 
@@ -51,14 +53,13 @@ def add_records_to_db(data, db_path, table_name):
     Raise:
         sqlite3.Error: If the database operation fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Adding records to database")
     with sqlite3.connect(db_path) as con:
         data.to_sql(table_name, con, if_exists="append", index=False)
         logger.info("Successfully added records to database")
 
 
-def get_rows_number(db_path, table_name, unique_id):
+def get_rows_number(db_path: Path, table_name: str, unique_id: str) -> int:
     """
     Gets the number of rows in a table.
 
@@ -73,7 +74,6 @@ def get_rows_number(db_path, table_name, unique_id):
     Raise:
         sqlite3.Error: If the database operation fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Getting rows number")
     with sqlite3.connect(db_path) as con:
         cur = con.cursor()
@@ -84,7 +84,7 @@ def get_rows_number(db_path, table_name, unique_id):
     return result[0]
 
 
-def get_table_keys(db_path, table_name, unique_id):
+def get_table_keys(db_path: Path, table_name: str, unique_id: str) -> List[str]:
     """
     Gets the unique keys from a table.
 
@@ -110,7 +110,9 @@ def get_table_keys(db_path, table_name, unique_id):
     return result_list
 
 
-def get_biggest_receipt_customer(db_path, table_name, unique_id):
+def get_biggest_receipt_customer(
+    db_path: Path, query_date: Optional[date] = None
+) -> dict:
     """
     Gets the biggest receipt customer from the database.
 
@@ -125,13 +127,20 @@ def get_biggest_receipt_customer(db_path, table_name, unique_id):
     Raise:
         sqlite3.Error: If the database operation fails.
     """
-    logger = logging.getLogger(__name__)
     logger.info("Getting biggest receipt customer")
     with sqlite3.connect(db_path) as con:
-        twoja_zmienna = pd.read_sql_query(
-            """SELECT c.name, r.total_money FROM receipt_headers r JOIN customers c ON r.customer_id = c.id ORDER BY r.total_money DESC LIMIT 1""",
+        if query_date is None:
+            query_date = date.today()
+        top_customer = pd.read_sql_query(
+            """SELECT c.name, r.total_money FROM receipt_headers r JOIN customers c ON r.customer_id = c.id WHERE r.receipt_date = ? ORDER BY r.total_money DESC LIMIT 1""",
             con,
+            params=[query_date],
         )
         logger.info("Successfully executed query")
-        logger.info(f"Biggest receipt customer: {twoja_zmienna}")
-        return twoja_zmienna
+        logger.info(f"Biggest receipt customer: {top_customer}")
+        if top_customer.empty:
+            return {"name": "Brak danych", "total_money": 0}
+        return {
+            "name": top_customer["name"].iloc[0],
+            "total_money": top_customer["total_money"].iloc[0],
+        }

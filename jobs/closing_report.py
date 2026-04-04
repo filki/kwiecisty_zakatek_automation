@@ -1,8 +1,9 @@
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from src.kwiaciarnia_monika.logger import setup_logger
 import asyncio
 from src.kwiaciarnia_monika.database import (
     get_rows_number,
@@ -20,13 +21,9 @@ import textwrap
 from config import DB_PATH
 
 load_dotenv()
-telegram_token = os.getenv("TELEGRAM_TOKEN")
-chatid_token = os.getenv("TELEGRAM_CHAT_ID")
-logging.basicConfig(
-    level=logging.INFO,
-    filename="main.log",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+telegram_token = os.environ["TELEGRAM_TOKEN"]
+chatid_token = os.environ["TELEGRAM_CHAT_ID"]
+
 
 now = datetime.now().strftime("%Y-%m-%d")
 logger = logging.getLogger(__name__)
@@ -90,7 +87,7 @@ async def send_database_copy():
         logger.error(f"Error sending database copy: {e}")
 
 
-async def send_customers_report():
+async def send_biggest_receipt_customer():
     """
     Sends customers report to telegram.
 
@@ -107,15 +104,13 @@ async def send_customers_report():
     Raises:
         sqlite3.Error: If the database operation fails.
     """
-    wynik = get_biggest_receipt_customer(
-        db_path=DB_PATH, table_name="receipt_headers", unique_id="receipt_number"
-    )
+    wynik = get_biggest_receipt_customer(db_path=DB_PATH)
     customers_report = f"""
         🌸 Cześć Monika, to był świetny dzień ({now})! 🌸
         Udało się zamknąć kasę! 
         Zestawienie twardych danych na dziś:
-        🏆 Krezus Dnia: {wynik["name"].iloc[0]} 
-        💸 Kwota zostawiona: {wynik["total_money"].iloc[0]} PLN
+        🏆 Krezus Dnia: {wynik["name"]} 
+        💸 Kwota zostawiona: {wynik["total_money"]} PLN
         Pamiętaj sprawdzić stany wody w wiadrach! Miłego wieczoru i odpoczywaj! 🌙
 
         """
@@ -127,7 +122,12 @@ async def send_customers_report():
     logger.info("Customers report sent to telegram")
 
 
+async def main():
+    setup_logger()
+    await send_closing_report()
+    await send_database_copy()
+    await send_biggest_receipt_customer()
+
+
 if __name__ == "__main__":
-    asyncio.run(send_closing_report())
-    asyncio.run(send_database_copy())
-    asyncio.run(send_customers_report())
+    asyncio.run(main())
