@@ -22,6 +22,7 @@ def webhook(
     challenge: str = Query(None, alias="hub.challenge"),
 ):
     if mode == "subscribe" and token == os.getenv("FB_VERIFY_TOKEN"):
+        print(f"DEBUG - Od FB: '{token}', Z pliku ENV: '{os.getenv('FB_TOKEN')}'")
         return Response(content=challenge, status_code=200)
     return Response(content="Invalid verification", status_code=403)
 
