@@ -45,15 +45,6 @@
             background-size: 24px 24px;
         }
 
-        /* Paralaksa Kwiaty w tle */
-        .parallax-flower {
-            position: fixed;
-            z-index: -1;
-            pointer-events: none;
-            will-change: transform;
-            transition: transform 0.1s ease-out;
-        }
-
         /* --- Interaktywna Galeria --- */
         #gallery-section {
             height: 80vh;
@@ -63,7 +54,6 @@
             background-color: transparent;
             margin: 4rem 0;
             cursor: grab;
-            touch-action: pan-y; /* Zabezpieczenie scrolla na mobile */
         }
 
         #gallery-section:active {
@@ -79,7 +69,6 @@
             width: max-content; 
             transform: translate(0%, -50%); 
             user-select: none;
-            will-change: transform;
         }
 
         #image-track > .image {
@@ -95,19 +84,6 @@
     </style>
 </head>
 <body class="text-brand-zielony antialiased font-sans flex flex-col min-h-screen relative overflow-x-hidden">
-
-    <div id="parallax-container" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <img src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" 
-             alt="" class="parallax-flower" style="top: 15%; right: -250px; width: 400px; opacity: 0.9;">
-        <img src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" 
-             alt="" class="parallax-flower" style="top: 35%; right: -350px; width: 500px; opacity: 0.8; transform: rotate(15deg);">
-        <img src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" 
-             alt="" class="parallax-flower" style="top: 55%; right: -300px; width: 450px; opacity: 0.7; transform: rotate(-10deg);">
-        <img src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" 
-             alt="" class="parallax-flower" style="top: 75%; right: -400px; width: 550px; opacity: 0.6; transform: rotate(45deg);">
-        <img src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" 
-             alt="" class="parallax-flower" style="top: 90%; right: -200px; width: 350px; opacity: 0.5;">
-    </div>
 
     <header class="relative py-24 px-4 text-center bg-white/95 backdrop-blur-sm border-b border-brand-roz/30 shadow-sm">
         <div class="max-w-4xl mx-auto z-10">
@@ -136,7 +112,7 @@
                 Florystyka to dla mnie powołanie. Wierzę, że natura dała nam wszystko, co najpiękniejsze, a moim zadaniem jest jedynie ubrać to w formę, która niesie radość, ukojenie i podniosłość. 
             </p>
             <p class="text-lg text-gray-700 leading-relaxed">
-                Łączę nietypowe elementy lasu i łąki z klasyczną elegancją. Niezależnie czy to intymny bukiet zaręczynowy, trwała kompozycja do salonu, czy uroczysta dekoracja ołtarza – w każdy projekt wkładam całe serce i szacunek do detalu.
+                Łączę nietypowe elements lasu i łąki z klasyczną elegancją. Niezależnie czy to intymny bukiet zaręczynowy, trwała kompozycja do salonu, czy uroczysta dekoracja ołtarza – w każdy projekt wkładam całe serce i szacunek do detalu.
             </p>
         </div>
     </section>
@@ -182,25 +158,6 @@
         </div>
     </section>
 
-    <section class="py-20 px-0 bg-brand-beze overflow-hidden">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="font-serif text-4xl md:text-5xl font-bold text-center mb-4 text-brand-zielony">Nasze realizacje</h2>
-            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Kliknij i przeciągnij galerię, aby zobaczyć nasze ulotne kompozycje – od bukietów ślubnych po florystykę sakralną.</p>
-        </div>
-
-        <div id="gallery-section">
-            <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-                <img class="image" src="/static/rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
-            </div>
-        </div>
-    </section>
 
     <section class="py-20 px-4 bg-white">
         <div class="max-w-3xl mx-auto text-center">
@@ -294,87 +251,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("🌸 Kwiecisty Zakątek: Skrypty zainicjalizowane.");
+            console.log("🌸 Skrypty: System gotowy.");
 
-            // 1. Paralaksa tła (Kwiaty)
-            const flowers = document.querySelectorAll('.parallax-flower');
-            console.log("Stan kwiatów:", flowers.length > 0 ? `Znaleziono ${flowers.length} szt.` : "BŁĄD: Nie znaleziono kwiatów!");
-
-            window.addEventListener('scroll', () => {
-                const scrollY = window.scrollY;
-                flowers.forEach((flower, index) => {
-                    const speed = (index + 1) * 0.12; 
-                    const x = scrollY * speed;
-                    
-                    // Przechowujemy rotację, żeby jej nie nadpisać
-                    if (!flower.dataset.rotation) {
-                        const style = window.getComputedStyle(flower);
-                        flower.dataset.rotation = style.transform === 'none' ? '' : style.transform;
-                    }
-                    
-                    flower.style.transform = `translateX(-${x}px) ${flower.dataset.rotation}`;
-                });
-            });
-
-            // 2. Akordeon FAQ
+            // 1. Akordeon FAQ (Paralaksa została wywalona)
             document.querySelectorAll('.faq-toggle').forEach(toggle => {
                 toggle.addEventListener('click', () => {
                     toggle.parentElement.classList.toggle('active');
                 });
             });
-
-            // 3. Galeria (Drag & Drop)
-            const track = document.getElementById("image-track");
-            
-            if (track) {
-                console.log("Galeria: Gotowa do działania.");
-
-                const handleOnDown = e => {
-                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                    track.dataset.mouseDownAt = clientX;
-                };
-
-                const handleOnUp = () => {
-                    track.dataset.mouseDownAt = "0";
-                    track.dataset.prevPercentage = track.dataset.percentage || "0";
-                };
-
-                const handleOnMove = e => {
-                    if (!track.dataset.mouseDownAt || track.dataset.mouseDownAt === "0") return;
-
-                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                    const mouseDelta = parseFloat(track.dataset.mouseDownAt) - clientX;
-                    const maxDelta = window.innerWidth;
-
-                    const percentage = (mouseDelta / maxDelta) * -100;
-                    const nextPercentageUnconstrained = parseFloat(track.dataset.prevPercentage) + percentage;
-                    const nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -100);
-
-                    track.dataset.percentage = nextPercentage;
-
-                    track.animate({
-                        transform: `translate(${nextPercentage}%, -50%)`
-                    }, { duration: 1200, fill: "forwards" });
-
-                    const images = track.getElementsByClassName("image");
-                    for(const image of images) {
-                        image.animate({
-                            objectPosition: `${100 + nextPercentage}% center`
-                        }, { duration: 1200, fill: "forwards" });
-                    }
-                };
-
-                // Uniwersalne listenery dla okna
-                window.addEventListener('mousedown', handleOnDown);
-                window.addEventListener('touchstart', e => handleOnDown(e.touches[0]), {passive: false});
-                
-                window.addEventListener('mouseup', handleOnUp);
-                window.addEventListener('touchend', handleOnUp, {passive: false});
-                
-                window.addEventListener('mousemove', handleOnMove);
-                window.addEventListener('touchmove', e => handleOnMove(e.touches[0]), {passive: false});
-            }
         });
+
+    
+
+        
     </script>
 </body>
 </html>
