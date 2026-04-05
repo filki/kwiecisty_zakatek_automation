@@ -294,61 +294,56 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
+            console.log("🌸 Kwiecisty Zakątek: Skrypty zainicjalizowane.");
+
             // 1. Paralaksa tła (Kwiaty)
             const flowers = document.querySelectorAll('.parallax-flower');
+            console.log("Stan kwiatów:", flowers.length > 0 ? `Znaleziono ${flowers.length} szt.` : "BŁĄD: Nie znaleziono kwiatów!");
+
             window.addEventListener('scroll', () => {
                 const scrollY = window.scrollY;
                 flowers.forEach((flower, index) => {
-                    const speed = (index + 1) * 0.12; // Subtelny ruch
+                    const speed = (index + 1) * 0.12; 
                     const x = scrollY * speed;
                     
-                    // Bezpieczniejsza obsługa transformacji, by nie gubić rotacji
-                    const initialRotation = flower.getAttribute('data-initial-rotate') || '';
-                    if (!initialRotation) {
-                        const match = flower.style.transform.match(/rotate\([^)]+\)/);
-                        if (match) flower.setAttribute('data-initial-rotate', match[0]);
+                    // Przechowujemy rotację, żeby jej nie nadpisać
+                    if (!flower.dataset.rotation) {
+                        const style = window.getComputedStyle(flower);
+                        flower.dataset.rotation = style.transform === 'none' ? '' : style.transform;
                     }
                     
-                    const rotation = flower.getAttribute('data-initial-rotate') || '';
-                    flower.style.transform = `translateX(-${x}px) ${rotation}`;
+                    flower.style.transform = `translateX(-${x}px) ${flower.dataset.rotation}`;
                 });
             });
 
             // 2. Akordeon FAQ
-            const toggles = document.querySelectorAll('.faq-toggle');
-            toggles.forEach(toggle => {
+            document.querySelectorAll('.faq-toggle').forEach(toggle => {
                 toggle.addEventListener('click', () => {
-                    const item = toggle.parentElement;
-                    const isActive = item.classList.contains('active');
-                    if (!isActive) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
+                    toggle.parentElement.classList.toggle('active');
                 });
             });
 
-            // 3. Galeria (Drag & Drop, mysz + dotyk)
+            // 3. Galeria (Drag & Drop)
             const track = document.getElementById("image-track");
             
             if (track) {
-                track.dataset.mouseDownAt = "0";
-                track.dataset.prevPercentage = "0";
+                console.log("Galeria: Gotowa do działania.");
 
-                const handleOnDown = e => track.dataset.mouseDownAt = e.clientX || (e.touches && e.touches[0].clientX);
+                const handleOnDown = e => {
+                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    track.dataset.mouseDownAt = clientX;
+                };
 
                 const handleOnUp = () => {
                     track.dataset.mouseDownAt = "0";
                     track.dataset.prevPercentage = track.dataset.percentage || "0";
-                }
+                };
 
                 const handleOnMove = e => {
-                    if(track.dataset.mouseDownAt === "0") return;
+                    if (!track.dataset.mouseDownAt || track.dataset.mouseDownAt === "0") return;
 
                     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                     const mouseDelta = parseFloat(track.dataset.mouseDownAt) - clientX;
-                    // Zwiększenie maxDelta (np. cała szerokość okna) spowalnia reakcję na drag
                     const maxDelta = window.innerWidth;
 
                     const percentage = (mouseDelta / maxDelta) * -100;
@@ -361,21 +356,23 @@
                         transform: `translate(${nextPercentage}%, -50%)`
                     }, { duration: 1200, fill: "forwards" });
 
-                    for(const image of track.getElementsByClassName("image")) {
+                    const images = track.getElementsByClassName("image");
+                    for(const image of images) {
                         image.animate({
                             objectPosition: `${100 + nextPercentage}% center`
                         }, { duration: 1200, fill: "forwards" });
                     }
-                }
+                };
 
-                window.onmousedown = handleOnDown;
-                window.ontouchstart = e => handleOnDown(e.touches[0]);
-
-                window.onmouseup = handleOnUp;
-                window.ontouchend = e => handleOnUp(e.touches[0]);
-
-                window.onmousemove = handleOnMove;
-                window.ontouchmove = e => handleOnMove(e.touches[0]);
+                // Uniwersalne listenery dla okna
+                window.addEventListener('mousedown', handleOnDown);
+                window.addEventListener('touchstart', e => handleOnDown(e.touches[0]), {passive: false});
+                
+                window.addEventListener('mouseup', handleOnUp);
+                window.addEventListener('touchend', handleOnUp, {passive: false});
+                
+                window.addEventListener('mousemove', handleOnMove);
+                window.addEventListener('touchmove', e => handleOnMove(e.touches[0]), {passive: false});
             }
         });
     </script>
