@@ -3,6 +3,7 @@ from fastapi import Query
 from fastapi.responses import Response, FileResponse
 import os
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
 import httpx
 
 load_dotenv()
@@ -10,6 +11,10 @@ load_dotenv()
 META_URL = "https://graph.facebook.com/v25.0/me/messages"
 app = fastapi.FastAPI()
 httpx_client = httpx.AsyncClient()
+
+# Znajdź folder główny projektu (3 poziomy wyżej od tego pliku)
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+app.mount("/static", StaticFiles(directory=PROJECT_ROOT), name="static")
 
 
 @app.get("/")
