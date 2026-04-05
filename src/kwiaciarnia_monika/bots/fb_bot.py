@@ -1,6 +1,6 @@
 import fastapi
 from fastapi import Query
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 import os
 from dotenv import load_dotenv
 import httpx
@@ -14,7 +14,7 @@ httpx_client = httpx.AsyncClient()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return FileResponse("index.html")
 
 
 @app.get("/webhook")
@@ -86,4 +86,4 @@ async def _send_options(sender_id: str):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=20846)

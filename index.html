@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kwiecisty Zakątek | Twoja Lokalna Pracownia Florystyczna</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Lato', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bordo: '#7c1c1f',    
+                            zielony: '#183c33',  
+                            roz: '#f3c4c9',      
+                            tlo: '#fdfbfb',      
+                            beze: '#f9f5f0'      
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Akordeon FAQ */
+        .faq-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .faq-item.active .faq-content { max-height: 300px; opacity: 1; }
+        .faq-item.active .icon { transform: rotate(180deg); }
+        
+        /* Subtelne tło strony */
+        body {
+            background-color: #fdfbfb;
+            background-image: radial-gradient(#f3c4c9 0.6px, transparent 0.6px);
+            background-size: 24px 24px;
+        }
+
+        /* Paralaksa Kwiaty w tle */
+        .parallax-flower {
+            position: fixed;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* --- Interaktywna Galeria --- */
+        #gallery-section {
+            height: 80vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+            background-color: transparent;
+            margin: 4rem 0;
+            cursor: grab;
+            touch-action: pan-y; /* Zabezpieczenie scrolla na mobile */
+        }
+
+        #gallery-section:active {
+            cursor: grabbing;
+        }
+
+        #image-track {
+            display: flex;
+            gap: 4vmin;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: max-content; 
+            transform: translate(0%, -50%); 
+            user-select: none;
+            will-change: transform;
+        }
+
+        #image-track > .image {
+            width: 40vmin;
+            height: 60vmin;
+            object-fit: cover;
+            object-position: 100% center;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            pointer-events: none; /* Blokada 'ghost image' drag */
+        }
+    </style>
+</head>
+<body class="text-brand-zielony antialiased font-sans flex flex-col min-h-screen relative overflow-x-hidden">
+
+    <div id="parallax-container" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1549247796-5d82006cca39?q=80&w=1000&auto=format&fit=crop" 
+             alt="" class="parallax-flower" style="top: 15%; right: -250px; width: 400px; opacity: 0.9;">
+        <img src="https://images.unsplash.com/photo-1549247796-5d82006cca39?q=80&w=1000&auto=format&fit=crop" 
+             alt="" class="parallax-flower" style="top: 35%; right: -350px; width: 500px; opacity: 0.8; transform: rotate(15deg);">
+        <img src="https://images.unsplash.com/photo-1549247796-5d82006cca39?q=80&w=1000&auto=format&fit=crop" 
+             alt="" class="parallax-flower" style="top: 55%; right: -300px; width: 450px; opacity: 0.7; transform: rotate(-10deg);">
+        <img src="https://images.unsplash.com/photo-1549247796-5d82006cca39?q=80&w=1000&auto=format&fit=crop" 
+             alt="" class="parallax-flower" style="top: 75%; right: -400px; width: 550px; opacity: 0.6; transform: rotate(45deg);">
+        <img src="https://images.unsplash.com/photo-1549247796-5d82006cca39?q=80&w=1000&auto=format&fit=crop" 
+             alt="" class="parallax-flower" style="top: 90%; right: -200px; width: 350px; opacity: 0.5;">
+    </div>
+
+    <header class="relative py-24 px-4 text-center bg-white/95 backdrop-blur-sm border-b border-brand-roz/30 shadow-sm">
+        <div class="max-w-4xl mx-auto z-10">
+            <span class="inline-block text-xs font-bold tracking-widest text-brand-zielony uppercase mb-4 bg-brand-beze border border-brand-roz px-4 py-1.5 rounded-full">
+                Pracownia Florystyczna
+            </span>
+            <h1 class="font-serif text-5xl md:text-7xl font-black text-brand-bordo mb-6 leading-tight">
+                Kwiecisty Zakątek
+            </h1>
+            <p class="font-serif italic text-xl md:text-2xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Emocje wyrażone w naturze. Od unikalnych bukietów okolicznościowych po pełną szacunku i piękna oprawę świątyń.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-brand-bordo text-white text-lg font-bold rounded-full shadow-lg hover:bg-red-900 transition-transform transform hover:scale-105">
+                    <svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.913 1.516 5.485 3.86 7.142-.152 1.342-.72 2.802-.743 2.862a.496.496 0 00.596.611c2.164-.537 3.99-1.636 4.67-2.073.535.084 1.088.128 1.657.128 5.523 0 10-4.145 10-9.259S17.523 2 12 2zm1.188 12.338l-2.457-2.613-4.787 2.613 5.253-5.568 2.508 2.613 4.736-2.613-5.253 5.568z"/></svg>
+                    Napisz na Messengerze
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-24 px-4 bg-brand-beze">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="font-serif text-3xl md:text-4xl font-bold text-brand-bordo mb-8">Więcej niż kwiaty</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                Florystyka to dla mnie powołanie. Wierzę, że natura dała nam wszystko, co najpiękniejsze, a moim zadaniem jest jedynie ubrać to w formę, która niesie radość, ukojenie i podniosłość. 
+            </p>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                Łączę nietypowe elementy lasu i łąki z klasyczną elegancją. Niezależnie czy to intymny bukiet zaręczynowy, trwała kompozycja do salonu, czy uroczysta dekoracja ołtarza – w każdy projekt wkładam całe serce i szacunek do detalu.
+            </p>
+        </div>
+    </section>
+
+    <section class="py-24 px-4 bg-white">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="font-serif text-3xl md:text-4xl font-bold text-brand-zielony mb-16">Nasze wartości</h2>
+            
+            <div class="grid md:grid-cols-3 gap-12 md:gap-8 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-brand-roz/40 rounded-full transform -translate-x-2 translate-y-2"></div>
+                        <svg class="w-10 h-10 text-brand-zielony relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-serif text-xl font-bold text-brand-bordo mb-3 lowercase">organiczna florystyka</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">Wybieramy sezonowe rośliny i naturalne materiały. Szanujemy przyrodę, czerpiąc z niej to, co najczystsze i najtrwalsze.</p>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-brand-roz/40 rounded-full transform translate-x-2 -translate-y-1"></div>
+                        <svg class="w-10 h-10 text-brand-zielony relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-serif text-xl font-bold text-brand-bordo mb-3 lowercase">detale są najważniejsze</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">Nie ma u nas taśmowej produkcji. Każda gałązka i wstążka ma swoje miejsce, aby stworzyć spójną, harmonijną całość.</p>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-brand-roz/40 rounded-full transform -translate-x-1 translate-y-2"></div>
+                        <svg class="w-10 h-10 text-brand-zielony relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-serif text-xl font-bold text-brand-bordo mb-3 lowercase">duchowa oprawa</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto">Z wielkim taktem i doświadczeniem zdobimy ołtarze. Wiemy, jak podkreślić sakralny charakter miejsca i ważność chwili.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-0 bg-brand-beze overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="font-serif text-4xl md:text-5xl font-bold text-center mb-4 text-brand-zielony">Nasze realizacje</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Kliknij i przeciągnij galerię, aby zobaczyć nasze ulotne kompozycje – od bukietów ślubnych po florystykę sakralną.</p>
+        </div>
+
+        <div id="gallery-section">
+            <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+                <img class="image" src="rikonavt-oEWdQsbRVZk-unsplash.jpg" draggable="false" />
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="font-serif text-3xl font-bold text-brand-bordo mb-8">Kiedy pracujemy?</h2>
+            <div class="bg-brand-beze rounded-3xl p-8 shadow-sm border border-brand-roz/30">
+                <ul class="space-y-4 text-lg text-gray-800">
+                    <li class="flex justify-between border-b border-brand-roz/20 pb-2">
+                        <span class="font-bold">Poniedziałek - Piątek</span>
+                        <span>09:00 - 17:00</span>
+                    </li>
+                    <li class="flex justify-between border-b border-brand-roz/20 pb-2">
+                        <span class="font-bold">Sobota</span>
+                        <span>09:00 - 14:00</span>
+                    </li>
+                    <li class="flex justify-between pt-2 text-brand-bordo font-bold">
+                        <span>Niedziela i Święta</span>
+                        <span>Dla oprawy ceremonii / Na zamówienie</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-4 bg-brand-beze">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="font-serif text-3xl font-bold text-center mb-10 text-brand-zielony">Najczęściej zadawane pytania</h2>
+            <div class="space-y-4">
+                <div class="faq-item border border-brand-roz/50 bg-white rounded-xl shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-lg flex justify-between items-center focus:outline-none">
+                        <span>Z jakim wyprzedzeniem zamawiać bukiet ślubny lub wystrój kościoła?</span>
+                        <svg class="icon w-6 h-6 text-brand-bordo transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content px-6 text-gray-700">
+                        <p class="pb-5 pt-1">Terminy na duże realizacje (śluby, komunie) najlepiej rezerwować z minimum 2-miesięcznym wyprzedzeniem. Pojedyncze bukiety okolicznościowe przygotowujemy na bieżąco, ale polecamy kontakt 1-2 dni wcześniej.</p>
+                    </div>
+                </div>
+                <div class="faq-item border border-brand-roz/50 bg-white rounded-xl shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-lg flex justify-between items-center focus:outline-none">
+                        <span>Czy robicie kompozycje z kwiatów suszonych na zamówienie?</span>
+                        <svg class="icon w-6 h-6 text-brand-bordo transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content px-6 text-gray-700">
+                        <p class="pb-5 pt-1">Oczywiście. Pracujemy na wysokiej jakości suszu i stabilizowanych roślinach. Możemy dobrać kolorystykę idealnie pod Twoje wnętrze.</p>
+                    </div>
+                </div>
+                <div class="faq-item border border-brand-roz/50 bg-white rounded-xl shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-lg flex justify-between items-center focus:outline-none">
+                        <span>Jak wyceniacie dekorację kościoła?</span>
+                        <svg class="icon w-6 h-6 text-brand-bordo transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content px-6 text-gray-700">
+                        <p class="pb-5 pt-1">Wycena jest zawsze indywidualna. Zależy od wielkości świątyni, wybranych gatunków kwiatów oraz ilości elementów (ołtarz główny, nawy, ławki, wejście). Zapraszamy do kontaktu przez Messengera w celu ustalenia szczegółów.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-4 bg-white flex-grow">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row bg-brand-beze rounded-[40px] border border-brand-roz/50 overflow-hidden shadow-sm">
+            
+            <div class="w-full lg:w-2/5 p-12 lg:p-20 flex flex-col justify-center">
+                <h3 class="font-serif text-4xl lg:text-5xl font-bold mb-8 text-brand-zielony">Odwiedź nas</h3>
+                
+                <div class="mb-10">
+                    <p class="text-2xl font-bold text-brand-bordo mb-2">Kwiecisty Zakątek</p>
+                    <p class="text-gray-700 text-lg">ul. Przykładowa 123</p>
+                    <p class="text-gray-700 text-lg">00-000 Twoja Miejscowość</p>
+                </div>
+                
+                <p class="text-gray-700 mb-10 font-bold text-lg">
+                    Telefon: <a href="tel:+48000000000" class="text-brand-bordo hover:underline">+48 000 000 000</a>
+                </p>
+
+                <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2411.3!2d16.5!3d52.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zT3JhY293bmlhIGZsb3J5c3R5Y3puYSBLd2llY2lzdHkgemFrxIV0ZWs!5e0!3m2!1spl!2spl!4v17123456789012" target="_blank" class="inline-flex items-center justify-center px-8 py-5 bg-brand-zielony text-white font-bold rounded-2xl hover:bg-green-900 transition-colors text-lg">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Wyznacz trasę w telefonie
+                </a>
+            </div>
+
+            <div class="w-full lg:w-3/5 min-h-[400px] lg:min-h-[600px] relative bg-gray-200">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2447.750709819579!2d18.051737977566834!3d52.157043163037216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4704d3104a509a83%3A0x94c838940261dc4a!2sPracownia%20florystyczna%20Kwiecisty%20zak%C4%85tek!5e0!3m2!1spl!2spl!4v1775423722664!5m2!1spl!2spl" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-brand-zielony text-brand-beze text-center py-6 mt-auto">
+        <p class="text-sm opacity-80">© 2026 Kwiecisty Zakątek. Tworzone w harmonii z naturą.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Paralaksa tła (Kwiaty)
+            const flowers = document.querySelectorAll('.parallax-flower');
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                flowers.forEach((flower, index) => {
+                    const speed = (index + 1) * 0.12; // Subtelny ruch
+                    const x = scrollY * speed;
+                    
+                    // Bezpieczniejsza obsługa transformacji, by nie gubić rotacji
+                    const initialRotation = flower.getAttribute('data-initial-rotate') || '';
+                    if (!initialRotation) {
+                        const match = flower.style.transform.match(/rotate\([^)]+\)/);
+                        if (match) flower.setAttribute('data-initial-rotate', match[0]);
+                    }
+                    
+                    const rotation = flower.getAttribute('data-initial-rotate') || '';
+                    flower.style.transform = `translateX(-${x}px) ${rotation}`;
+                });
+            });
+
+            // 2. Akordeon FAQ
+            const toggles = document.querySelectorAll('.faq-toggle');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const item = toggle.parentElement;
+                    const isActive = item.classList.contains('active');
+                    if (!isActive) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            // 3. Galeria (Drag & Drop, mysz + dotyk)
+            const track = document.getElementById("image-track");
+            
+            if (track) {
+                track.dataset.mouseDownAt = "0";
+                track.dataset.prevPercentage = "0";
+
+                const handleOnDown = e => track.dataset.mouseDownAt = e.clientX || (e.touches && e.touches[0].clientX);
+
+                const handleOnUp = () => {
+                    track.dataset.mouseDownAt = "0";
+                    track.dataset.prevPercentage = track.dataset.percentage || "0";
+                }
+
+                const handleOnMove = e => {
+                    if(track.dataset.mouseDownAt === "0") return;
+
+                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    const mouseDelta = parseFloat(track.dataset.mouseDownAt) - clientX;
+                    // Zwiększenie maxDelta (np. cała szerokość okna) spowalnia reakcję na drag
+                    const maxDelta = window.innerWidth;
+
+                    const percentage = (mouseDelta / maxDelta) * -100;
+                    const nextPercentageUnconstrained = parseFloat(track.dataset.prevPercentage) + percentage;
+                    const nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -100);
+
+                    track.dataset.percentage = nextPercentage;
+
+                    track.animate({
+                        transform: `translate(${nextPercentage}%, -50%)`
+                    }, { duration: 1200, fill: "forwards" });
+
+                    for(const image of track.getElementsByClassName("image")) {
+                        image.animate({
+                            objectPosition: `${100 + nextPercentage}% center`
+                        }, { duration: 1200, fill: "forwards" });
+                    }
+                }
+
+                window.onmousedown = handleOnDown;
+                window.ontouchstart = e => handleOnDown(e.touches[0]);
+
+                window.onmouseup = handleOnUp;
+                window.ontouchend = e => handleOnUp(e.touches[0]);
+
+                window.onmousemove = handleOnMove;
+                window.ontouchmove = e => handleOnMove(e.touches[0]);
+            }
+        });
+    </script>
+</body>
+</html>
