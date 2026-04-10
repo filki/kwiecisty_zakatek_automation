@@ -1,0 +1,997 @@
+{
+  "name": "basicBot",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/{{ $json.body.entry[0].messaging[0].recipient.id }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"generic\",\n        \"elements\": [\n          {\n            \"title\": \"💐 Bukiet za 50 zł\",\n            \"image_url\": \"https://i.ibb.co/wNrckL0R/9a527626-0e80-4528-a95d-6aa65d83763d.jpg\",\n            \"subtitle\": \"Skromny, ale uroczy. Idealny na drobny upominek.\",\n            \"buttons\": [\n              {\n                \"type\": \"postback\",\n                \"title\": \"Wybieram (50 zł)\",\n                \"payload\": \"BUKIET_50\"\n              }\n            ]\n          },\n          {\n            \"title\": \"🌷 Bukiet za 100 zł\",\n            \"image_url\": \"https://i.ibb.co/gZwsxhCG/dwqeqwdwdqswq.jpg\",\n            \"subtitle\": \"Klasyczny i elegancki. Nasz bestseller.\",\n            \"buttons\": [\n              {\n                \"type\": \"postback\",\n                \"title\": \"Wybieram (100 zł)\",\n                \"payload\": \"BUKIET_100\"\n              }\n            ]\n          },\n          {\n            \"title\": \"🌹 Bukiet za 150 zł\",\n            \"image_url\": \"https://i.ibb.co/WNVnqCLd/7d0e141e-cc02-4d69-92b2-3b3bca2b8390.jpg\",\n            \"subtitle\": \"Opcja Premium. Zrobi ogromne wrażenie.\",\n            \"buttons\": [\n              {\n                \"type\": \"postback\",\n                \"title\": \"Wybieram (150 zł)\",\n                \"payload\": \"BUKIET_150\"\n              }\n            ]\n          }\n        ]\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3120,
+        1904
+      ],
+      "id": "d70ec840-dceb-42df-9af7-26aa14c46ce0",
+      "name": "choose_buquet",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n  \"text\": \"Dziękuję! Powiadomiłem już kwiaciarnię. Odezwiemy się do Ciebie niebawem! 🌸\"\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2032,
+        2432
+      ],
+      "id": "4050120b-5e82-4133-8e2c-4526f3c04cdf",
+      "name": "send_confirmation",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\" \n  },\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"button\",\n        \"text\": \"Twój bukiet będzie gotowy: {{ $node[\"Code in JavaScript\"].json[\"readable_time\"] }}. Czy ten termin Ci odpowiada?\",\n        \"buttons\": [\n          {\n            \"type\": \"postback\",\n            \"title\": \"OK\",\n            \"payload\": \"CONFIRM_ORDER\"\n          },\n          {\n            \"type\": \"postback\",\n            \"title\": \"CHCE ZMIENIĆ TERMIN\",\n            \"payload\": \"RESTART_FLOW\"\n          }\n        ]\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3712,
+        2080
+      ],
+      "id": "a414f804-2ace-4400-8f95-902e319dcaf7",
+      "name": "buqets_choose_termin",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5596090471",
+        "text": "=🔔 NOWE ZAMÓWIENIE!\n\n💐 Bukiet za: {{ $node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][1].value.replace('BUKIET_', '') }} zł\n📅 Termin: {{ DateTime.fromISO($node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][0].value).setZone('Europe/Warsaw').toFormat('dd.MM.yyyy, HH:mm') }}\n👤 ID Klienta: {{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\n\n",
+        "replyMarkup": "=none",
+        "forceReply": {},
+        "replyKeyboardOptions": {},
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3136,
+        2480
+      ],
+      "id": "f5b7900c-cb01-46fc-ba8d-0cae73c4e50c",
+      "name": "Send a text message",
+      "webhookId": "97d27ce8-1607-4492-9de6-9c9f906671c4",
+      "credentials": {
+        "telegramApi": {
+          "id": "O6pUivYgl0AuVHTw",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].postback?.payload || $json.body.entry[0].messaging[0].message?.quick_reply?.payload }}",
+                    "rightValue": "START_BOTA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "7d1583a3-41cb-45da-9c4c-c977d98136ee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "STRUCTURED"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0fd8a03c-13bd-4371-84b2-090bc5b0be32",
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].message?.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "UNSTRUCTURED"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1824,
+        2048
+      ],
+      "id": "76bad913-f82f-4250-8ebc-705b3543035b",
+      "name": "interaction"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b396af39-edbc-4352-b10e-58f2e25a48fb",
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].postback?.payload || $json.body.entry[0].messaging[0].message?.quick_reply?.payload }}",
+                    "rightValue": "START_BOTA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "START_MENU"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].postback?.payload || $json.body.entry[0].messaging[0].message?.quick_reply?.payload }}",
+                    "rightValue": "FAQ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "46f84d99-b350-41e1-b04f-0d18ee30025e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "FAQ_QUERY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "095438a3-7c52-4b89-8c08-e1e7d19d223b",
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].postback?.payload || $json.body.entry[0].messaging[0].message?.quick_reply?.payload }}",
+                    "rightValue": "CENNIK",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CENNIK_QUERY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "79cdd07e-fe27-47d1-946e-5b50cd75268c",
+                    "leftValue": "={{ $json.body.entry[0].messaging[0].postback.payload }}",
+                    "rightValue": "BUKIET_",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ZAPYTANIE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "571faa64-049f-44f7-80df-c3d71f1e1fa7",
+                    "leftValue": "={{ $('if_termin_suits').item.json.body.entry[0].messaging[0].postback?.payload}}",
+                    "rightValue": "RESTART_FLOW",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2176,
+        1984
+      ],
+      "id": "da1f34ae-6a08-42d7-9051-b9c5c6f22945",
+      "name": "executor"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"button\",\n        \"text\": \"Nasze godziny otwarcia, adres oraz przykładowe wyceny bukietów znajdziesz na naszej stronie. Kliknij przycisk poniżej! 👇\",\n        \"buttons\": [\n          {\n            \"type\": \"web_url\",\n            \"url\": \"https://frog02-20846.wykr.es/?v=bot777#faq\",\n            \"title\": \"🌸 Otwórz FAQ i Cennik\",\n            \"webview_height_ratio\": \"tall\"\n          }\n        ]\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2704,
+        1808
+      ],
+      "id": "8a927f1d-c9d3-4462-b749-8eaf538644ad",
+      "name": "FAQ",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "71f2e0c3-cc4e-4bb4-a578-7ad4c8e6ad51",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        2032
+      ],
+      "id": "ea37a164-468e-4325-932c-2073090fe0fe",
+      "name": "fp_message",
+      "webhookId": "71f2e0c3-cc4e-4bb4-a578-7ad4c8e6ad51"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('fp_message').item.json.query.hub_challenge }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1744,
+        1472
+      ],
+      "id": "60caad94-fe2b-4ea0-8069-eb99c37f0ff6",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3b287d73-f5c4-4b46-a6f9-12c425d43ddb",
+              "leftValue": "={{ $json.query.hub_mode }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "0f4b56c6-c3c9-424e-bb15-531776b6575e",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "chuj",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1520,
+        1648
+      ],
+      "id": "b7717d2d-227d-47bc-8e39-711127242206",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kwiaciarnia-db-filki.aws-eu-west-1.turso.io/v2/pipeline",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"type\": \"execute\",\n      \"stmt\": {\n        \"sql\": \"INSERT INTO zamowienia_bot (facebook_id, wybrany_bukiet) VALUES (?, ?) ON CONFLICT(facebook_id) DO UPDATE SET wybrany_bukiet = excluded.wybrany_bukiet\",\n        \"args\": [\n          { \"type\": \"text\", \"value\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\" },\n          { \"type\": \"text\", \"value\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].postback?.payload }}\" }\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2704,
+        2064
+      ],
+      "id": "1a963585-8967-4f04-bcb9-94c538bc7383",
+      "name": "insert_state_to_database",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SIHME2ZyHkUeU8TV",
+          "name": "Turso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kwiaciarnia-db-filki.aws-eu-west-1.turso.io/v2/pipeline",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"type\": \"execute\",\n      \"stmt\": {\n        \"sql\": \"UPDATE zamowienia_bot SET termin = ?, status = 'CZEKA_NA_POTWIERDZENIE' WHERE facebook_id = ?\",\n        \"args\": [\n          {\n            \"type\": \"text\",\n            \"value\": \"{{ $node['Code in JavaScript'].json.ready_at }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"value\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3456,
+        2064
+      ],
+      "id": "dfe054b2-f1fb-411a-aae7-858ba15d6a06",
+      "name": "insert_dtate_to_database",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SIHME2ZyHkUeU8TV",
+          "name": "Turso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "fbe2f1fbd597c8e46f87858e43b7c997d58f28d3b34d7a65b5bd19e4193df44a@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "kwiaciarnia_dev"
+        },
+        "start": "={{ DateTime.fromISO($node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][0].value).minus({minutes: 120}).toISO() }}",
+        "end": "={{ $node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][0].value }}",
+        "additionalFields": {
+          "color": "={{ $node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][1].value == 'BUKIET_150' ? '11' : ($node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][1].value == 'BUKIET_100' ? '2' : '1') }}",
+          "summary": "=Bukiet {{ $node[\"get_termin_from_db\"].json.results[0].response.result.rows[0][1].value.replace('BUKIET_', '') }} zł - ID: {{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        2528,
+        2464
+      ],
+      "id": "1ca49b68-85fc-4ee5-b242-06d80321a029",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "8mqNpP9Jv2CUsdE8",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kinowa0305@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kinowa0305@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ day: 5 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        2928,
+        2064
+      ],
+      "id": "c8e1a2ff-4f14-4d8a-bd98-361358b5634f",
+      "name": "Get many events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "8mqNpP9Jv2CUsdE8",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pobieramy dane z poprzedniego węzła\nconst items = $input.all();\n\n// PARAMETRY KONFIGURACYJNE\nconst bufferMinutes = 120; // 2 godziny na bukiet\nconst safetyMargin = 5;    // 5 minut zapasu na \"teraz\"\nconst OPEN_HOUR = 8;       // Otwarcie o 08:00 w Polsce\nconst CLOSE_HOUR = 16;     // Zamknięcie o 16:00 w Polsce\n\n// --- MAGIA STREFY CZASOWEJ (Rozwiązanie problemu zimy/lata) ---\n// Funkcja obliczająca dynamicznie różnicę czasu dla Warszawy dla DOWOLNEJ daty\nfunction getWarsawOffset(date) {\n  let utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));\n  let warsawDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));\n  return (warsawDate.getTime() - utcDate.getTime()) / 3600000; // Zwraca +1 (zima) lub +2 (lato)\n}\n\n// 1. EKSTRAKCJA I CZYSZCZENIE DANYCH\nlet busySlots = items.map(i => ({\n  start: new Date(i.json.start.dateTime),\n  end: new Date(i.json.end.dateTime)\n})).sort((a, b) => a.start - b.end);\n\n// 2. INICJALIZACJA POSZUKIWAŃ\nlet proposalStart = new Date();\nproposalStart.setMinutes(proposalStart.getMinutes() + safetyMargin);\n\n// 3. ALGORYTM PRZESUWNEGO OKNA (Sliding Window)\nlet found = false;\nlet iterations = 0;\n\nwhile (!found && iterations < 100) { // Safety break\n  // Pobieramy aktualny offset dla sprawdzanego dnia\n  let currentOffset = getWarsawOffset(proposalStart);\n  \n  // Dynamiczne przeliczenie otwarcia i zamknięcia na czas serwera\n  let OPEN_HOUR_UTC = OPEN_HOUR - currentOffset;\n  let CLOSE_HOUR_UTC = CLOSE_HOUR - currentOffset;\n  \n  let currentHourUTC = proposalStart.getUTCHours();\n  let expectedEndHourUTC = currentHourUTC + (bufferMinutes / 60);\n\n  // A) Jeśli w Polsce jest przed 8:00 rano\n  if (currentHourUTC < OPEN_HOUR_UTC) {\n    proposalStart.setUTCHours(OPEN_HOUR_UTC, 0, 0, 0);\n  }\n  // B) Jeśli nie zdążymy skończyć przed 16:00, skaczemy na jutro\n  else if (expectedEndHourUTC > CLOSE_HOUR_UTC || currentHourUTC >= CLOSE_HOUR_UTC) {\n    proposalStart.setUTCDate(proposalStart.getUTCDate() + 1);\n    proposalStart.setUTCHours(OPEN_HOUR_UTC, 0, 0, 0);\n    // Wymuszamy ponowny obrót pętli, bo offset mógł się zmienić w nocy!\n    continue; \n  }\n\n  // Obliczamy koniec naszego okienka na pracę\n  let proposalEnd = new Date(proposalStart);\n  proposalEnd.setMinutes(proposalEnd.getMinutes() + bufferMinutes);\n\n  // Szukamy kolizji z Google Calendar\n  let collision = busySlots.find(slot => {\n    return (proposalStart < slot.end && proposalEnd > slot.start);\n  });\n\n  if (collision) {\n    proposalStart = new Date(collision.end);\n    iterations++;\n  } else {\n    found = true; \n  }\n}\n\n// 4. ZWROT WYNIKU\nlet readyDate = new Date(proposalStart.getTime() + bufferMinutes * 60000);\n\nreturn [{\n  json: {\n    ready_at: readyDate.toISOString(),\n    readable_time: readyDate.toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' }),\n    processing_iterations: iterations\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3168,
+        2064
+      ],
+      "id": "72683536-9a45-40ce-9d3f-7045cee90043",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b290f717-bdba-41f4-acb7-5c15385fdc3b",
+              "leftValue": "={{ $('fp_message').item.json.body.entry[0].messaging[0].postback?.payload}}",
+              "rightValue": "CONFIRM_ORDER",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        2064
+      ],
+      "id": "5d9ef73f-fc23-47f2-bc4a-fcfcbf75f5fa",
+      "name": "if_termin_suits"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kwiaciarnia-db-filki.aws-eu-west-1.turso.io/v2/pipeline",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"type\": \"execute\",\n      \"stmt\": {\n        \"sql\": \"SELECT termin, wybrany_bukiet FROM zamowienia_bot WHERE facebook_id = ?\",\n        \"args\": [\n          { \"type\": \"text\", \"value\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"  }\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        2288
+      ],
+      "id": "a25e40e3-322a-478b-b795-876fa72160cc",
+      "name": "get_termin_from_db",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SIHME2ZyHkUeU8TV",
+          "name": "Turso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kwiaciarnia-db-filki.aws-eu-west-1.turso.io/v2/pipeline",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"type\": \"execute\",\n      \"stmt\": {\n        \"sql\": \"UPDATE zamowienia_bot SET status = 'ZAAKCEPTOWANE' WHERE facebook_id = ?\",\n        \"args\": [\n          {\n            \"type\": \"text\",\n            \"value\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2800,
+        2464
+      ],
+      "id": "9d8c8da0-4329-4b94-a5ca-87e9dd06f515",
+      "name": "update",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SIHME2ZyHkUeU8TV",
+          "name": "Turso"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('fp_message').item.json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"button\",\n        \"text\": \"Nie ma problemu! 🌸 Wybierz najwygodniejszy dla Ciebie termin bezpośrednio w moim kalendarzu:\",\n        \"buttons\": [\n          {\n            \"type\": \"web_url\",\n            \"url\": \"https://calendar.app.google/L9Z8kdAEWX8BxRMu5\",\n            \"title\": \"📅 Wybierz godzinę\",\n            \"webview_height_ratio\": \"full\"\n          }\n        ]\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2688,
+        2272
+      ],
+      "id": "428800bc-6d15-45d7-bc2b-d6825c3c91f4",
+      "name": "send_agent",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qgLVT8vsUJzJJNwB",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/qgLVT8vsUJzJJNwB",
+          "cachedResultName": "faq"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2896,
+        1744
+      ],
+      "id": "2803faa1-6664-488c-b352-51cfbeb02fb9",
+      "name": "Call 'My Sub-Workflow 1'",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n    \"text\": \"Przykro mi, obecnie nie posiadam zdolności do odczytywania tekstu, natomiast chętnie Ci pomogę moimi umiejętnościami. Wybierz coś z poniższych opcji! 👇\",\n    \"quick_replies\": [\n      {\n        \"content_type\": \"text\",\n        \"title\": \"FAQ\",\n        \"payload\": \"FAQ\"\n      },\n      {\n        \"content_type\": \"text\",\n        \"title\": \"Cennik bukietów\",\n        \"payload\": \"CENNIK\"\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2016,
+        1792
+      ],
+      "id": "29b15111-162c-4199-91cc-4cca6b5feccf",
+      "name": "send_initial_choices",
+      "credentials": {
+        "facebookGraphAppApi": {
+          "id": "cPYacrVDKNVrbFJU",
+          "name": "Facebook Graph (App) account"
+        },
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n    \"text\": \"Przykro mi, obecnie nie posiadam zdolności do odczytywania tekstu, natomiast chętnie Ci pomogę moimi umiejętnościami. Wybierz coś z poniższych opcji! 👇\",\n    \"quick_replies\": [\n      {\n        \"content_type\": \"text\",\n        \"title\": \"FAQ\",\n        \"payload\": \"FAQ\"\n      },\n      {\n        \"content_type\": \"text\",\n        \"title\": \"Cennik bukietów\",\n        \"payload\": \"CENNIK\"\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2448,
+        1680
+      ],
+      "id": "50e33e2a-cb84-420e-9020-2d311c7899ce",
+      "name": "send_initial_choices1",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "p4IZHN6cTJ8Zzo0B",
+          "name": "FB_PAT"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "choose_buquet": {
+      "main": [
+        []
+      ]
+    },
+    "send_confirmation": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buqets_choose_termin": {
+      "main": [
+        []
+      ]
+    },
+    "interaction": {
+      "main": [
+        [
+          {
+            "node": "executor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send_initial_choices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "executor": {
+      "main": [
+        [
+          {
+            "node": "send_initial_choices1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "choose_buquet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "insert_state_to_database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send_agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fp_message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "if_termin_suits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert_state_to_database": {
+      "main": [
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert_dtate_to_database": {
+      "main": [
+        [
+          {
+            "node": "buqets_choose_termin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "insert_dtate_to_database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_termin_suits": {
+      "main": [
+        [
+          {
+            "node": "get_termin_from_db",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_termin_from_db": {
+      "main": [
+        [
+          {
+            "node": "send_confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FAQ": {
+      "main": [
+        [
+          {
+            "node": "Call 'My Sub-Workflow 1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "eb1a42ca-c62e-42f3-b595-cda491f46e82",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f15ddab0f76949f9cd4bd2e6959ad64d7cf11636caff495d3d85ee08a52d5ec5"
+  },
+  "id": "nz0uvrIa9qvvXUtC",
+  "tags": []
+}
